@@ -1,4 +1,5 @@
 import logging
+import json
 import spotipy
 import spotipy.util as util
 
@@ -9,14 +10,21 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 class MLearnipy(spotipy.Spotify):
     limit = 100
 
-    def __init__(self, default_username=None, ignore_parent=False, auth=None, requests_session=True,
+    def __init__(self, ignore_parent=False, auth=None, requests_session=True,
                  client_credentials_manager=None):
-        self.default_username = default_username
+        self._default_username = None
         if not ignore_parent:
             super().__init__(auth, requests_session, client_credentials_manager)
 
-    def set_default_username(self, default_username):
-        self.default_username = default_username
+
+    @property
+    def default_username(self):
+        return self._default_username
+
+    @default_username.setter
+    def default_username(self, username):
+        self._default_username = username
+
 
     def _count_number_of_requests(self, total_tracks):
         requests_needed = total_tracks // self.limit
@@ -50,7 +58,7 @@ class MLearnipy(spotipy.Spotify):
         offsets = self._generate_offsets(num_songs)
         num_requests = self._count_number_of_requests(num_songs)
 
-        # 333 R4, Range [0,1,2,3]
+
         for request in range(0, num_requests):
             result.append(self.user_playlist_tracks(username, playlist_id, offset=offsets[request], limit=self.limit)['items'])
 
@@ -63,6 +71,18 @@ class MLearnipy(spotipy.Spotify):
 
 
 
+def main():
+    # username = str(input("Please enter your Spotify ID: eg. 1199434580"))
+    username = 'coder-hermes'
+    pl_id = '6eqDI9wH4BW6lbEckWWAAD'
+    token = util.prompt_for_user_token(username)
+    # Grabs a OAuth token
+    if token:
+        sp = MLearnipy(auth=token)
+        logger.debug('NUM SONGS: {}'.format(sp._fetch_number_of_songs_in_playlist(pl_id)))
+        # sp.fetch_all_song_ids_from_a_playlist(pl_id)
+    else:
+        logger.debug('You do not have a token')
 
 
 
@@ -70,16 +90,8 @@ class MLearnipy(spotipy.Spotify):
 
 
 if __name__ == '__main__':
-    # username = str(input("Please enter your Spotify ID: eg. 1199434580"))
-    username = '1199434580'
-    pl_id = '0tLRGkAKOmWk62BxU6OvW8'
-    token = util.prompt_for_user_token(username)
-    # Grabs a OAuth token
-    if token:
-        sp = MLearnipy(default_username='1199434580', auth=token)
-        sp.fetch_all_song_ids_from_a_playlist(pl_id)
-    else:
-        logger.debug('You do not have a token')
+    main()
+
 
 
 
