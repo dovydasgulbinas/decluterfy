@@ -4507,3 +4507,20 @@ playlist = {
     'offset': 0,
     'total': 60
 }
+
+mini_ob = {
+    'added_by': {
+        'uri': 'spotify:user:coder-hermes',
+        'id': 'coder-hermes',
+        'external_urls': {
+            'spotify': 'http://open.spotify.com/user/coder-hermes'
+        },
+        'href': 'https://api.spotify.com/v1/users/coder-hermes',
+        'type': 'user'
+    }
+
+}
+
+
+if __name__ == '__main__':
+    print(mini_ob['added_by']['uri'])
