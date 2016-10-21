@@ -1,12 +1,13 @@
 from unittest.mock import MagicMock
 import pytest
-from playlist_mock_60_songs import mini_ob, playlist
+from playlist_mock_60_songs import mini_ob, playlist, mock_audio_features
 
 from spotipy_client import MLearnipy
 
 username = 'coder-hermes'
 playlist_id = '0tLRGkAKOmWk62BxU6OvW8'
 pl_1_song_id = '6O7qFEXmLQcOsV37wrgJDz'
+selected_features = ['id','energy', 'tempo']
 
 
 @pytest.fixture(scope='module')
@@ -17,9 +18,10 @@ def token():
 
 @pytest.fixture(scope='module')
 def sp():
-    learnipy = MLearnipy(auth=token())
+    learnipy = MLearnipy(username, auth=token())
     # creates a fake python object for further testing
     learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
+    learnipy.audio_features = MagicMock(return_value=mock_audio_features)
     # sets default username for the instance
     learnipy.default_username = username
     return learnipy
@@ -44,5 +46,13 @@ class TestMLearnipy:
         # the playlist has 60 identical songs therefore we generate a list w/ 60 of them
         assert sp().fetch_all_song_ids_from_a_playlist(playlist_id) == ([pl_1_song_id]*60)
 
-    def test_fetch_all_song_ids_from_a_playlist_with_120_songs(self):
-        assert sp().fetch_all_song_ids_from_a_playlist(playlist_id) == ([pl_2_song_id_1] * 60 + [pl_2_song_id_2] * 60)
+    def test_fetch_song_features_with_60_ids(self):
+        assert sp()._fetch_song_features(([pl_1_song_id]*60), print_json=False) == mock_audio_features['audio_features']
+
+    def test_fetch_filtered_features__all_60_ids_match(self):
+        fff = sp().fetch_filtered_features(playlist_id, ['id'])
+        assert fff['id'] == [pl_1_song_id]*60
+
+
+
+
