@@ -1,13 +1,13 @@
 from unittest.mock import MagicMock
 import pytest
-from playlist_mock_60_songs import mini_ob, playlist, mock_audio_features
+from playlist_mock_60_songs import mini_ob, playlist, mock_audio_features, mock_audio_features_100, mock_audio_features_any
 
 from spotipy_client import MLearnipy
 
 username = 'coder-hermes'
 playlist_id = '0tLRGkAKOmWk62BxU6OvW8'
 pl_1_song_id = '6O7qFEXmLQcOsV37wrgJDz'
-selected_features = ['id','energy', 'tempo']
+selected_features = ['id', 'energy', 'tempo']
 
 
 @pytest.fixture(scope='module')
@@ -44,15 +44,32 @@ class TestMLearnipy:
 
     def test_fetch_all_song_ids_from_a_playlist_with_60_songs(self):
         # the playlist has 60 identical songs therefore we generate a list w/ 60 of them
-        assert sp().fetch_all_song_ids_from_a_playlist(playlist_id) == ([pl_1_song_id]*60)
+        assert sp().fetch_all_song_ids_from_a_playlist(playlist_id) == ([pl_1_song_id] * 60)
 
     def test_fetch_song_features_with_60_ids(self):
-        assert sp()._fetch_song_features(([pl_1_song_id]*60), print_json=False) == mock_audio_features['audio_features']
+        assert sp()._fetch_song_features(([pl_1_song_id] * 60), print_json=False) == mock_audio_features
+
+    def test_fetch_song_features__with_100_ids(self):
+        assert sp()._fetch_song_features(([pl_1_song_id] * 100), print_json=False) == mock_audio_features_100
+
+    def test_fetch_song_features__with_3_ids(self):
+        assert sp()._fetch_song_features(([pl_1_song_id] * 3), print_json=False) == mock_audio_features_any*3
 
     def test_fetch_filtered_features__all_60_ids_match(self):
         fff = sp().fetch_filtered_features(playlist_id, ['id'])
-        assert fff['id'] == [pl_1_song_id]*60
+        assert fff['id'] == [pl_1_song_id] * 60
+
+    def test__slice_to_multiple_lists__limit2_odd_number_items(self):
+        assert sp()._slice_to_multiple_lists([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]]
+
+    def test__slice_to_multiple_lists__limit2_equal_number_items(self):
+        assert sp()._slice_to_multiple_lists([1, 2, 3, 4], 2) == [[1, 2], [3, 4]]
+
+    def test__slice_to_multiple_lists__limit3_equal_number_items(self):
+        assert sp()._slice_to_multiple_lists([1, 2, 3, 4], 3) == [[1, 2, 3], [4]]
 
 
+    def test__slice_to_multiple_lists__limit3_odd_number_items(self):
+        assert sp()._slice_to_multiple_lists([1, 2, 3, 4,5 ], 3) == [[1, 2, 3], [4,5]]
 
 
