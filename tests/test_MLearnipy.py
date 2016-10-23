@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 import pytest
 from playlist_mock_60_songs import mini_ob, playlist, mock_audio_features, mock_audio_features_100, mock_audio_features_any
+import json
 
 from spotipy_client import MLearnipy
 
@@ -49,11 +50,22 @@ class TestMLearnipy:
     def test_fetch_song_features_with_60_ids(self):
         assert sp()._fetch_song_features(([pl_1_song_id] * 60), print_json=False) == mock_audio_features
 
-    def test_fetch_song_features__with_100_ids(self):
-        assert sp()._fetch_song_features(([pl_1_song_id] * 100), print_json=False) == mock_audio_features_100
+    # def test_fetch_song_features__with_101_ids(self):
+    #     lp = MLearnipy(username, auth=token())
+    #     # creates a fake python object for further testing
+    #
+    #     lp.audio_features = MagicMock(return_value=mock_audio_features_any * 101)
+    #
+    #     assert lp._fetch_song_features(([pl_1_song_id] * 101)) == mock_audio_features_any * 101
+
 
     def test_fetch_song_features__with_3_ids(self):
-        assert sp()._fetch_song_features(([pl_1_song_id] * 3), print_json=False) == mock_audio_features_any*3
+        lp = MLearnipy(username, auth=token())
+        # creates a fake python object for further testing
+        lp.user_playlist_tracks = MagicMock(return_value=playlist)
+        lp.audio_features = MagicMock(return_value=mock_audio_features_any*3)
+
+        assert lp._fetch_song_features(([pl_1_song_id] * 3)) == mock_audio_features_any*3
 
     def test_fetch_filtered_features__all_60_ids_match(self):
         fff = sp().fetch_filtered_features(playlist_id, ['id'])

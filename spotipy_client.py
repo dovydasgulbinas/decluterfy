@@ -95,8 +95,6 @@ class MLearnipy(spotipy.Spotify):
         return result
 
 
-
-
 # todo: refactor me to be used as a general method for multiple requests with arguments [][]
     def fetch_all_song_ids_from_a_playlist(self, playlist_id):
         """Takes in a playlist id and returns all songs in a given playlist."""
@@ -124,7 +122,7 @@ class MLearnipy(spotipy.Spotify):
                 items.append(playlist_songs)
         return items
 
-    def _fetch_song_features(self, id_list, print_json = True):
+    def _fetch_song_features(self, id_list, print_json = False):
         """Takes a list of song ids and returns list of their audio features"""
         features = []
         sliced_ids = self._slice_to_multiple_lists(id_list)
@@ -179,13 +177,38 @@ class MLearnipy(spotipy.Spotify):
 
 
 
+class DatasetFormer:
+    """Takes in a dictionary with lists inside and constructs ML friendly datastructure."""
+    def __init__(self, data_frame, target_field):
+        """Takes in a datastructure.
+
+        Arguments:
+        - data_frame - a data frame that has keys and lists assgined to arbitrary keys e.g:
+                    {
+                    "height": [1,2, ... n-th_sample],
+                    "length": [1,2, ... n-th_sample],
+                    "eye_color": [1,2, ... n-th_sample],
+                    "target_feature": ['child', 'adult', 'teen']
+                    ...
+                    }
+        - target_field - the label(str)  by which data is classified
+
+        """
+
+        self._data_frame = data_frame
+
+    def generate_objects(self):
+        """Runs all methods that are required to generate a ML dataset."""
+        pass
+
+    
+
+
+
+
 def main():
     # username = str(input("Please enter your Spotify ID: eg. 1199434580"))
-    username = 'coder-hermes'
-    #pl_id = '67hGMCzFtkcQEnZyJT4yCJ'
-    #pl_id = '6eqDI9wH4BW6lbEckWWAAD'
 
-    token = util.prompt_for_user_token(username)
     # Grabs a OAuth token
     if token:
         sp = MLearnipy(username, auth=token)
@@ -196,8 +219,9 @@ def main():
         for song_id in enumerate(song_list):
             logger.debug('{}. {}'.format(song_id[0],song_id[1]))
 
-        print( sp.fetch_filtered_features(pl_id,['id', 'energy']))
-
+        fetched_data= sp.fetch_filtered_features(pl_id, ['id', 'energy'])
+        print(fetched_data)
+        logger.debug("The length of the list: {}".format(len(fetched_data['id'])))
     else:
         logger.debug('You do not have a token')
 
