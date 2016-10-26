@@ -6,7 +6,6 @@ import spotipy
 import spotipy.util as util
 
 logger = logging.getLogger('/.spotipy_client')
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class MLearnipy(spotipy.Spotify):
@@ -227,4 +226,5 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     main()
