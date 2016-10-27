@@ -11,7 +11,7 @@ logger = logging.getLogger('/.spotipy_client')
 class MLearnipy(spotipy.Spotify):
     """Allows to use Spotify API with no hard limitations. It also outputs some data in numpy convienent method"""
 
-    def __init__(self, username, limit=100,  ignore_parent=False, auth=None, requests_session=True,
+    def __init__(self, username, limit=100, ignore_parent=False, auth=None, requests_session=True,
                  client_credentials_manager=None):
         self._default_username = username
         if not ignore_parent:
@@ -19,6 +19,11 @@ class MLearnipy(spotipy.Spotify):
         self.limit = limit
         self._last_playlist = None
         self._last_playlist_id = None
+
+    def print_separator(self, message='', width=80, separator='=', add_spaces=True):
+        print('')
+        print(message.center(width, separator))
+        print('')
 
     @property
     def default_username(self):
@@ -83,18 +88,16 @@ class MLearnipy(spotipy.Spotify):
         # 2 - 3
         # 4 - 5
 
-        for i in range(1, n_lists+1):
-
-            start = (i-1) * limit
-            end = (i)*limit
-            #logger.debug('List iterrator: {} | {}'.format(start, end))
+        for i in range(1, n_lists + 1):
+            start = (i - 1) * limit
+            end = (i) * limit
+            # logger.debug('List iterrator: {} | {}'.format(start, end))
             sub_list = list[start:end]
             result.append(sub_list)
         logger.debug(result)
         return result
 
-
-# todo: refactor me to be used as a general method for multiple requests with arguments [][]
+    # todo: refactor me to be used as a general method for multiple requests with arguments [][]
     def fetch_all_song_ids_from_a_playlist(self, playlist_id):
         """Takes in a playlist id and returns all songs in a given playlist."""
         self._last_playlist_id = playlist_id
@@ -116,12 +119,12 @@ class MLearnipy(spotipy.Spotify):
                 songs_per_request = num_songs - offsets[request]
             logger.debug("SONGS PER REQUEST: {}".format(songs_per_request))
             for i in range(0, songs_per_request):
-                #logger.debug("i:{}, spr:{}, rq:{}".format(i, songs_per_request,request))
+                # logger.debug("i:{}, spr:{}, rq:{}".format(i, songs_per_request,request))
                 playlist_songs = playlist['items'][i]['track']['id']
                 items.append(playlist_songs)
         return items
 
-    def _fetch_song_features(self, id_list, print_json = False):
+    def _fetch_song_features(self, id_list, print_json=False):
         """Takes a list of song ids and returns list of their audio features"""
         features = []
         sliced_ids = self._slice_to_multiple_lists(id_list)
@@ -135,9 +138,8 @@ class MLearnipy(spotipy.Spotify):
         delta = time.time() - start
         if print_json:
             print(json.dumps(features, indent=4))
-        logger.info("Total {} features retrieved in {} seconds".format(len(features),delta))
+        logger.info("Total {} features retrieved in {} seconds".format(len(features), delta))
         return features
-
 
     def fetch_filtered_features(self, playlist_id, selected_features):
         """ Fetches audio features of all songs in a given playlist
@@ -167,17 +169,56 @@ class MLearnipy(spotipy.Spotify):
 
         for songs_features in all_features:
             for index in selection:
-                #logger.debug(songs_features)
-                #logger.debug(index)
+                logger.debug(songs_features)
+                logger.debug(index)
                 selection[index].append(songs_features[index])
 
         logger.debug(selection)
         return selection
 
+    def list_playlists_and_chose_one(self, username):
+        """Lists all all playlists user has and returns id of a chosen pl and a list of all pls"""
+        self.print_separator()
+        playlists = self.user_playlists(username)
+        pl_ids = []
+        playlists = list(enumerate(playlists['items'], start=0))
+        for index, playlist in playlists:
+            print(" #{} \t{} \t{}".format(index, playlist['id'], playlist['name']))
+
+            # generates a list of all user playlists
+            pl_ids.append(playlist['id'])
+
+        self.print_separator()
+
+        no_input = True
+        selected = None
+        while no_input:
+            try:
+                selected = int(input("Please enter which playlist you want to Decluterfy:"))
+            except Exception as e:
+                print("You wrong data input: \"{}\"".format(e))
+                no_input = True
+            else:
+                no_input = False
+
+        print('')
+        logger.debug((playlists[selected][1]['id'], pl_ids))
+        # a tuple
+        logger.info('Number of fetched playlists: {}'.format(len(pl_ids)))
+        return (playlists[selected][1]['id'], pl_ids)
+
+    def list_playlist_songs(self, playlist_id):
+        """list all songs of a users playlist it uses default id as users id."""
+        results = self.user_playlist(self.default_username, playlist_id, fields="tracks")
+        tracks = results['tracks']['items']
+        for i, item in enumerate(tracks):
+            track = item['track']
+            print("{}. {} -- {} \t {}".format(i, track['artists'][0]['name'], track['name'], track['id']))
 
 
 class DatasetFormer:
     """Takes in a dictionary with lists inside and constructs ML friendly datastructure."""
+
     def __init__(self, data_frame, target_field):
         """Takes in a datastructure.
 
@@ -200,10 +241,6 @@ class DatasetFormer:
         """Runs all methods that are required to generate a ML dataset."""
         pass
 
-    
-
-
-
 
 def main():
     # username = str(input("Please enter your Spotify ID: eg. 1199434580"))
@@ -216,9 +253,9 @@ def main():
         # sp.fetch_all_song_ids_from_a_playlist(pl_id)
         song_list = sp.fetch_all_song_ids_from_a_playlist(pl_id)
         for song_id in enumerate(song_list):
-            logger.debug('{}. {}'.format(song_id[0],song_id[1]))
+            logger.debug('{}. {}'.format(song_id[0], song_id[1]))
 
-        fetched_data= sp.fetch_filtered_features(pl_id, ['id', 'energy'])
+        fetched_data = sp.fetch_filtered_features(pl_id, ['id', 'energy'])
         print(fetched_data)
         logger.debug("The length of the list: {}".format(len(fetched_data['id'])))
     else:
