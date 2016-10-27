@@ -181,6 +181,26 @@ class MLearnipy(spotipy.Spotify):
         self.print_separator()
         playlists = self.user_playlists(username)
         pl_ids = []
+
+        """
+        sp = spotipy.Spotify(auth=token)
+        playlists = sp.user_playlists(username)
+        for playlist in playlists['items']:
+            if playlist['owner']['id'] == username:
+                print()
+                print(playlist['name'])
+                print('  total tracks', playlist['tracks']['total'])
+                results = sp.user_playlist(username, playlist['id'], fields="tracks,next")
+                tracks = results['tracks']
+                show_tracks(tracks)
+                while tracks['next']:
+                    tracks = sp.next(tracks)
+                    show_tracks(tracks)ss
+
+        """
+
+
+
         playlists = list(enumerate(playlists['items'], start=0))
         for index, playlist in playlists:
             print(" #{} \t{} \t{}".format(index, playlist['id'], playlist['name']))
@@ -214,6 +234,18 @@ class MLearnipy(spotipy.Spotify):
         for i, item in enumerate(tracks):
             track = item['track']
             print("{}. {} -- {} \t {}".format(i, track['artists'][0]['name'], track['name'], track['id']))
+
+    # FIXME: Refactor to utils class
+    def substract_lists(self, x, y):
+        """Utility method that makes a sublist of two lists RETURNS: list"""
+        z = list(set(x) - set(y))
+        return z
+
+    # TODO: Fetch i-th playlist songs
+
+    # TODO: Fetch i-th playlist features
+
+    # TODO: Append i-th playlist features to `data` object
 
 
 class DatasetFormer:

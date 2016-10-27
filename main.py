@@ -22,11 +22,7 @@ def main():
         playlists = sp.list_playlists_and_chose_one(username)
         pl_id = playlists[0]
 
-        # TODO: Fetch i-th playlist songs
-
-        # TODO: Fetch i-th playlist features
-
-        # TODO: Append i-th playlist features to `data` object
+        # TODO: call fetch filtered features
 
         # Print songs contained in a PL
         sp.list_playlist_songs(pl_id)
