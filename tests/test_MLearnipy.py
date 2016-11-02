@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 import pytest
-from playlist_mock_60_songs import mini_ob, playlist, mock_audio_features, mock_audio_features_100, mock_audio_features_any
+from playlist_mock_60_songs import playlist, mock_audio_features, mock_audio_features_100, \
+    mock_audio_features_any
 import json
 
 from spotipy_client import MLearnipy
@@ -8,7 +9,14 @@ from spotipy_client import MLearnipy
 username = 'coder-hermes'
 playlist_id = '0tLRGkAKOmWk62BxU6OvW8'
 pl_1_song_id = '6O7qFEXmLQcOsV37wrgJDz'
+pl_1_song_energy = 0.621
+pl_1_song_tempo = 89.926
 selected_features = ['id', 'energy', 'tempo']
+
+pl_feats = {}
+pl_feats['id'] = [pl_1_song_id] * 60
+pl_feats['energy'] = [pl_1_song_energy] * 60
+pl_feats['tempo'] = [pl_1_song_tempo] * 60
 
 
 @pytest.fixture(scope='module')
@@ -23,6 +31,20 @@ def sp():
     # creates a fake python object for further testing
     learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
     learnipy.audio_features = MagicMock(return_value=mock_audio_features)
+    # sets default username for the instance
+    learnipy.default_username = username
+    return learnipy
+
+
+@pytest.fixture(scope='module')
+def spp():
+    learnipy = MLearnipy(username, auth=token())
+    # creates a fake python object for further testing
+    learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
+    learnipy.audio_features = MagicMock(return_value=mock_audio_features)
+    learnipy.fetch_filtered_features = MagicMock(
+        return_value={"id": [pl_1_song_id] * 60, "energy": [pl_1_song_energy] * 60})
+
     # sets default username for the instance
     learnipy.default_username = username
     return learnipy
@@ -50,22 +72,20 @@ class TestMLearnipy:
     def test_fetch_song_features_with_60_ids(self):
         assert sp()._fetch_song_features(([pl_1_song_id] * 60), print_json=False) == mock_audio_features
 
-    # def test_fetch_song_features__with_101_ids(self):
-    #     lp = MLearnipy(username, auth=token())
-    #     # creates a fake python object for further testing
-    #
-    #     lp.audio_features = MagicMock(return_value=mock_audio_features_any * 101)
-    #
-    #     assert lp._fetch_song_features(([pl_1_song_id] * 101)) == mock_audio_features_any * 101
+    def test_fetch_song_features__with_120_ids(self):
+        lp = MLearnipy(username, auth=token())
+        # creates a fake python object for further testing
+        lp.audio_features = MagicMock(return_value=mock_audio_features_any * 60)
 
+        assert lp._fetch_song_features(([pl_1_song_id] * 120)) == mock_audio_features_any * 120
 
     def test_fetch_song_features__with_3_ids(self):
         lp = MLearnipy(username, auth=token())
         # creates a fake python object for further testing
         lp.user_playlist_tracks = MagicMock(return_value=playlist)
-        lp.audio_features = MagicMock(return_value=mock_audio_features_any*3)
+        lp.audio_features = MagicMock(return_value=mock_audio_features_any * 3)
 
-        assert lp._fetch_song_features(([pl_1_song_id] * 3)) == mock_audio_features_any*3
+        assert lp._fetch_song_features(([pl_1_song_id] * 3)) == mock_audio_features_any * 3
 
     def test_fetch_filtered_features__all_60_ids_match(self):
         fff = sp().fetch_filtered_features(playlist_id, ['id'])
@@ -80,8 +100,71 @@ class TestMLearnipy:
     def test__slice_to_multiple_lists__limit3_equal_number_items(self):
         assert sp()._slice_to_multiple_lists([1, 2, 3, 4], 3) == [[1, 2, 3], [4]]
 
-
     def test__slice_to_multiple_lists__limit3_odd_number_items(self):
-        assert sp()._slice_to_multiple_lists([1, 2, 3, 4,5 ], 3) == [[1, 2, 3], [4,5]]
+        assert sp()._slice_to_multiple_lists([1, 2, 3, 4, 5], 3) == [[1, 2, 3], [4, 5]]
 
+    def test_get_all_users_songs_w_selected_features(self):
+        pls = [playlist_id, playlist_id]
+        fs = ['id']
 
+        assert spp(). \
+                   get_all_users_songs_w_selected_features(pls, fs) == {"id": [pl_1_song_id] * 120}
+
+    def test_get_all_users_songs_w_selected_features__two_attrs(self):
+        def sppp():
+            learnipy = MLearnipy(username, auth=token())
+            # creates a fake python object for further testing
+            learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
+            learnipy.audio_features = MagicMock(return_value=mock_audio_features)
+            learnipy.fetch_filtered_features = MagicMock(
+                return_value={'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2})
+
+            # sets default username for the instance
+            learnipy.default_username = username
+            return learnipy
+
+        pls = [playlist_id]
+        c = {'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2}
+        m = sppp().get_all_users_songs_w_selected_features(pls, ['id', 'energy'])
+
+        assert m == c
+
+    def test_get_all_users_songs_w_selected_features__3_attrs(self):
+        def sppp():
+            learnipy = MLearnipy(username, auth=token())
+            # creates a fake python object for further testing
+            learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
+            learnipy.audio_features = MagicMock(return_value=mock_audio_features)
+            learnipy.fetch_filtered_features = MagicMock(
+                return_value={'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2,
+                              'tempo': [pl_1_song_tempo] * 2})
+
+            # sets default username for the instance
+            learnipy.default_username = username
+            return learnipy
+
+        pls = [playlist_id]
+        c = {'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2, 'tempo': [pl_1_song_tempo] * 2}
+        m = sppp().get_all_users_songs_w_selected_features(pls, ['id', 'energy', 'tempo'])
+
+        assert m == c
+
+    def test_get_all_users_songs_w_selected_features_n_attrs(self):
+        def sppp():
+            learnipy = MLearnipy(username, auth=token())
+            # creates a fake python object for further testing
+            learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
+            learnipy.audio_features = MagicMock(return_value=mock_audio_features)
+            learnipy.fetch_filtered_features = MagicMock(
+                return_value={'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2,
+                              'tempo': [pl_1_song_tempo] * 2})
+
+            # sets default username for the instance
+            learnipy.default_username = username
+            return learnipy
+
+        pls = [playlist_id, playlist_id]
+        c = {'id': [pl_1_song_id] * 4, 'energy': [pl_1_song_energy] * 4, 'tempo': [pl_1_song_tempo] * 4}
+        m = sppp().get_all_users_songs_w_selected_features(pls, ['id', 'energy', 'tempo'])
+
+        assert m == c

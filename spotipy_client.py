@@ -22,7 +22,7 @@ class MLearnipy(spotipy.Spotify):
 
     def print_separator(self, message='', width=80, separator='=', add_spaces=True):
         print('')
-        print(message.center(width, separator))
+        print(str(message).center(width, separator))
         print('')
 
     @property
@@ -176,56 +176,49 @@ class MLearnipy(spotipy.Spotify):
         logger.debug(selection)
         return selection
 
-    def list_playlists_and_chose_one(self, username):
+    def list_playlists_and_chose_one(self, username=None):
         """Lists all all playlists user has and returns id of a chosen pl and a list of all pls"""
+        if not username:
+            username = self.default_username
         self.print_separator()
         playlists = self.user_playlists(username)
         pl_ids = []
-
-        """
-        sp = spotipy.Spotify(auth=token)
-        playlists = sp.user_playlists(username)
-        for playlist in playlists['items']:
-            if playlist['owner']['id'] == username:
-                print()
-                print(playlist['name'])
-                print('  total tracks', playlist['tracks']['total'])
-                results = sp.user_playlist(username, playlist['id'], fields="tracks,next")
-                tracks = results['tracks']
-                show_tracks(tracks)
-                while tracks['next']:
-                    tracks = sp.next(tracks)
-                    show_tracks(tracks)ss
-
-        """
-
-
+        pl_excluded = []
 
         playlists = list(enumerate(playlists['items'], start=0))
         for index, playlist in playlists:
-            print(" #{} \t{} \t{}".format(index, playlist['id'], playlist['name']))
 
-            # generates a list of all user playlists
-            pl_ids.append(playlist['id'])
+            if playlist['owner']['id'] == username:
+                print(" #{} \t{} \t{}".format(index, playlist['id'], playlist['name']))
+                # generates a list of playlists that only belong to a user
+                pl_ids.append(playlist['id'])
+            else:
+                # prints the playlists that user does not own
+                print(" -- \t{} \t{}".format(playlist['id'], playlist['name']))
+                pl_excluded.append(index)
 
         self.print_separator()
-
         no_input = True
         selected = None
         while no_input:
             try:
-                selected = int(input("Please enter which playlist you want to Decluterfy:"))
+                selected = int(input("Please enter which playlist you want to Decluterfy:\n"))
             except Exception as e:
-                print("You wrong data input: \"{}\"".format(e))
+                print('You wrong data input: "{}"\n'.format(e))
                 no_input = True
             else:
-                no_input = False
+                if selected not in pl_excluded:
+                    no_input = False
+                else:
+                    logger.debug(selected, pl_excluded)
+                    print("The playlist you chose does not belong to you, please chose another \n")
+                    no_input = True
 
         print('')
         logger.debug((playlists[selected][1]['id'], pl_ids))
         # a tuple
         logger.info('Number of fetched playlists: {}'.format(len(pl_ids)))
-        return (playlists[selected][1]['id'], pl_ids)
+        return (playlists[selected][1]['id']), pl_ids
 
     def list_playlist_songs(self, playlist_id):
         """list all songs of a users playlist it uses default id as users id."""
@@ -241,11 +234,73 @@ class MLearnipy(spotipy.Spotify):
         z = list(set(x) - set(y))
         return z
 
-    # TODO: Fetch i-th playlist songs
+    def get_all_users_songs_w_selected_features(self, playlist_ids, selected_features):
+        """Gets selected features from all the songs user has. Returns dict
 
-    # TODO: Fetch i-th playlist features
+        Arguments:
+            - playlist_ids - a list of playlist ids that belong to a user
+            - selected_features - a list of strings that can be found in Spotify API audio-features
 
-    # TODO: Append i-th playlist features to `data` object
+        Returns dictionary with following structure:
+                {
+                "id": [1,2, ... nSongs],
+                "duration_ms": [1,2, ... nSongs],
+                "danceability": [1,2, ... nSongs],
+                ...
+                }
+        """
+        result = dict.fromkeys(selected_features, [])
+        logger.debug('CALLING: get_all_users_songs_w_selected_features')
+        # self.print_separator(selected_features)
+        # self.print_separator(result)
+
+        for playlist_id in playlist_ids:
+            # returns filtered features of a single playlist
+            playlist_features = self.fetch_filtered_features(playlist_id, selected_features)
+
+            for feature in selected_features:
+                result[feature] = result[feature] + playlist_features[feature]
+
+        return result
+
+    def get_user_song_data_and_playlist_to_decluter(self, selected_features):
+        """Gets all user songs by selected features.
+
+        Arguments:
+            - selected_features - a list of strings that can be found in Spotify API audio-features
+
+        Returns a tuple of all playlist features excluding selected, returns selected as a new dict
+        (      {
+                "id": [1,2, ... xSongs],
+                "duration_ms": [1,2, ... xSongs],
+                "danceability": [1,2, ... xSongs],
+                ...
+                },
+                     {
+                "id": [1,2, ... ySongs],
+                "duration_ms": [1,2, ... ySongs],
+                "danceability": [1,2, ... ySongs],
+                ...
+                }
+
+
+         )
+        """
+
+        pls = self.list_playlists_and_chose_one()
+        selected_pl = pls[0]  # gets one id of a playlist
+        other_pls = self.substract_lists(pls[1], [selected_pl])  # get a list of remaining playlist ids
+
+        spf = self.get_all_users_songs_w_selected_features([selected_pl], selected_features)
+        sof = self.get_all_users_songs_w_selected_features(other_pls, selected_features)
+
+        spf_len = len(spf[selected_features[0]])
+        sof_len = len(sof[selected_features[0]])
+        total_len = sof_len + spf_len
+
+        logger.info('Total features received: {} + {} = {}'.format(spf_len, sof_len, total_len))
+
+        return spf, sof
 
 
 class DatasetFormer:
@@ -276,22 +331,7 @@ class DatasetFormer:
 
 def main():
     # username = str(input("Please enter your Spotify ID: eg. 1199434580"))
-
-    # Grabs a OAuth token
-    if token:
-        sp = MLearnipy(username, auth=token)
-        sp.default_username = username
-        logger.debug('NUM SONGS: {}'.format(sp._fetch_number_of_songs_in_playlist(pl_id)))
-        # sp.fetch_all_song_ids_from_a_playlist(pl_id)
-        song_list = sp.fetch_all_song_ids_from_a_playlist(pl_id)
-        for song_id in enumerate(song_list):
-            logger.debug('{}. {}'.format(song_id[0], song_id[1]))
-
-        fetched_data = sp.fetch_filtered_features(pl_id, ['id', 'energy'])
-        print(fetched_data)
-        logger.debug("The length of the list: {}".format(len(fetched_data['id'])))
-    else:
-        logger.debug('You do not have a token')
+    pass
 
 
 if __name__ == '__main__':

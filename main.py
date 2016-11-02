@@ -5,6 +5,7 @@ import spotipy.util as util
 from spotipy_client import MLearnipy
 
 username = 'coder-hermes'
+default_features = ['id', 'energy']
 
 
 def fetch_token(username='coder-hermes'):
@@ -16,24 +17,11 @@ def main():
     if token:
         sp = MLearnipy(username, auth=token)
 
-        # Lets you co chose decluter pl
-        # pl_id = list_playlists_and_chose_one(sp, username)
+        features = sp.get_user_song_data_and_playlist_to_decluter(default_features)
+        print(features[0])
 
-        playlists = sp.list_playlists_and_chose_one(username)
-        pl_id = playlists[0]
-
-        # TODO: call fetch filtered features
-
-        # Print songs contained in a PL
-        sp.list_playlist_songs(pl_id)
-
-        # Generate a list of song ids
-        song_list = sp.fetch_all_song_ids_from_a_playlist(pl_id)
-
-        # Extract features of those songs
-        attrs = ['id', 'duration_ms']
-        data = sp.fetch_filtered_features(pl_id, attrs)
-
+        sp.print_separator(' All other features ')
+        print(features[1])
 
         # TODO: DO ML analysis with decision tree
 
