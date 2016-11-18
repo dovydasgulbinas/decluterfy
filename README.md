@@ -1,6 +1,13 @@
 # decluterfy
 A tool for getting your playlist data from Spotify and running some machine learning to make decisions
 
+## Starting the project
+
+1. Download & Install Anaconda 4.2.0: [HERE](https://www.continuum.io/downloads#windows)
+2. Create your virtual enviroment: `conda create -n my_project_env python=3`
+3. Activate your new virtual env: `activate my_project_env`
+4. Install `Spotipy` package via pip: `pip install spotipy`
+5. Run the file: `main.py`
 
 
 # about objects
