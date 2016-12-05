@@ -20,7 +20,7 @@ class MLearnipy(spotipy.Spotify):
         self._last_playlist = None
         self._last_playlist_id = None
 
-    def print_separator(self, message='', width=80, separator='=', add_spaces=True):
+    def print_separator(self, message='', width=80, separator='=' ):
         print('')
         print(str(message).center(width, separator))
         print('')
@@ -263,7 +263,7 @@ class MLearnipy(spotipy.Spotify):
 
         return result
 
-    def get_user_song_data_and_playlist_to_decluter(self, selected_features):
+    def get_target_and_all_other_pls(self, selected_features):
         """Gets all user songs by selected features.
 
         Arguments:
@@ -282,8 +282,6 @@ class MLearnipy(spotipy.Spotify):
                 "danceability": [1,2, ... ySongs],
                 ...
                 }
-
-
          )
         """
 
@@ -303,30 +301,7 @@ class MLearnipy(spotipy.Spotify):
         return spf, sof
 
 
-class DatasetFormer:
-    """Takes in a dictionary with lists inside and constructs ML friendly datastructure."""
 
-    def __init__(self, data_frame, target_field):
-        """Takes in a datastructure.
-
-        Arguments:
-        - data_frame - a data frame that has keys and lists assgined to arbitrary keys e.g:
-                    {
-                    "height": [1,2, ... n-th_sample],
-                    "length": [1,2, ... n-th_sample],
-                    "eye_color": [1,2, ... n-th_sample],
-                    "target_feature": ['child', 'adult', 'teen']
-                    ...
-                    }
-        - target_field - the label(str)  by which data is classified
-
-        """
-
-        self._data_frame = data_frame
-
-    def generate_objects(self):
-        """Runs all methods that are required to generate a ML dataset."""
-        pass
 
 
 def main():

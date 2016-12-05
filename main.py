@@ -17,7 +17,7 @@ def main():
     if token:
         sp = MLearnipy(username, auth=token)
 
-        features = sp.get_user_song_data_and_playlist_to_decluter(default_features)
+        features = sp.get_target_and_all_other_pls(default_features)
         print(features[0])
 
         sp.print_separator(' All other features ')
