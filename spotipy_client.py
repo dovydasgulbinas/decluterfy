@@ -20,7 +20,7 @@ class MLearnipy(spotipy.Spotify):
         self._last_playlist = None
         self._last_playlist_id = None
 
-    def print_separator(self, message='', width=80, separator='=' ):
+    def print_separator(self, message='', width=80, separator='='):
         print('')
         print(str(message).center(width, separator))
         print('')
@@ -228,8 +228,8 @@ class MLearnipy(spotipy.Spotify):
             track = item['track']
             print("{}. {} -- {} \t {}".format(i, track['artists'][0]['name'], track['name'], track['id']))
 
-    # FIXME: Refactor to utils class
-    def substract_lists(self, x, y):
+    @staticmethod
+    def substract_lists(x, y):
         """Utility method that makes a sublist of two lists RETURNS: list"""
         z = list(set(x) - set(y))
         return z
@@ -251,8 +251,6 @@ class MLearnipy(spotipy.Spotify):
         """
         result = dict.fromkeys(selected_features, [])
         logger.debug('CALLING: get_all_users_songs_w_selected_features')
-        # self.print_separator(selected_features)
-        # self.print_separator(result)
 
         for playlist_id in playlist_ids:
             # returns filtered features of a single playlist
@@ -299,9 +297,6 @@ class MLearnipy(spotipy.Spotify):
         logger.info('Total features received: {} + {} = {}'.format(spf_len, sof_len, total_len))
 
         return spf, sof
-
-
-
 
 
 def main():
