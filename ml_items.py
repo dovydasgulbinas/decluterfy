@@ -25,7 +25,7 @@ Storage -- list storage below
 class DatasetFormer:
     """Takes in a dictionary with lists inside and constructs ML friendly datastructure."""
 
-    def __init__(self, data_frame, target_keys):
+    def __init__(self, data_frame, target_key):
         """Takes in a datastructure.
 
         Arguments:
@@ -41,6 +41,18 @@ class DatasetFormer:
         """
 
         self._data_frame = data_frame
+        self.target_key = target_key
+
+        self.target_names = None  # unique target values are added here
+        self.feature_names = None  # values go here
+        self.target = None  # repeating target names go here CONVERTED TO INTS
+        self.data = None  # all other features but target_feature for every element :: LOL
+
+        # helper vars
+        self.targets_as_ids = None  # a id based list that is extracted from target features from dict
+        self.targets_original = None  # a shortcut variable for accessing target features
+
+        self.total_entries = len(self._data_frame[self.target_key])
 
     @staticmethod
     def generate_int_id_index(item_list):
@@ -69,6 +81,33 @@ class DatasetFormer:
     def generate_objects(self):
         """Runs all methods that are required to generate a ML dataset."""
         pass
+
+    @staticmethod
+    def structure_as_row(keys, dict, index):
+        result = []
+
+        for key in keys:
+            result.append(dict[key][index])
+
+        return result
+
+    def _structurize_dict_array(self):
+
+        # add all keys to feature_names
+        names = list(self._data_frame.keys())
+        names.sort()
+        names.remove(self.target_key)
+        self.feature_names = names
+        # get all unique targets and add them to target_names
+        self.targets_original = self._data_frame[self.target_key]
+        target_ids, unique_targets = self.generate_int_id_index(self.targets_original)
+        self.target_names = unique_targets
+        # remap target value names to ids
+        self.target = self.generate_int_ids_of_items(self.targets_original, self.target_names)
+        # add all dict data in table structure
+        self.data = []
+        for i in range(0, self.total_entries):
+            self.data.append(self.structure_as_row(self.feature_names, self._data_frame, i))
 
 
 def main():
