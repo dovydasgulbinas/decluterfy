@@ -54,6 +54,9 @@ class DatasetFormer:
 
         self.total_entries = len(self._data_frame[self.target_key])
 
+        # gives class instance a final data structure
+        self._structurize_dict_array()
+
     @staticmethod
     def generate_int_id_index(item_list):
         """Takes in a list of data evaluates its uniquines and repopulates it with indexes."""
@@ -83,11 +86,11 @@ class DatasetFormer:
         pass
 
     @staticmethod
-    def structure_as_row(keys, dict, index):
+    def structure_as_row(keys, dic, index):
         result = []
 
         for key in keys:
-            result.append(dict[key][index])
+            result.append(dic[key][index])
 
         return result
 
