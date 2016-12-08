@@ -229,7 +229,7 @@ class MLearnipy(spotipy.Spotify):
             print("{}. {} -- {} \t {}".format(i, track['artists'][0]['name'], track['name'], track['id']))
 
     @staticmethod
-    def substract_lists(x, y):
+    def subtract_lists(x, y):
         """Utility method that makes a sublist of two lists RETURNS: list"""
         z = list(set(x) - set(y))
         return z
@@ -261,7 +261,7 @@ class MLearnipy(spotipy.Spotify):
 
         return result
 
-    def get_target_and_all_other_pls(self, selected_features):
+    def get_target_and_all_other_pls(self, selected_features, attach_pl_ids=False):
         """Gets all user songs by selected features.
 
         Arguments:
@@ -285,7 +285,7 @@ class MLearnipy(spotipy.Spotify):
 
         pls = self.list_playlists_and_chose_one()
         selected_pl = pls[0]  # gets one id of a playlist
-        other_pls = self.substract_lists(pls[1], [selected_pl])  # get a list of remaining playlist ids
+        other_pls = self.subtract_lists(pls[1], [selected_pl])  # get a list of remaining playlist ids
 
         spf = self.get_all_users_songs_w_selected_features([selected_pl], selected_features)
         sof = self.get_all_users_songs_w_selected_features(other_pls, selected_features)

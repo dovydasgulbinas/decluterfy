@@ -168,3 +168,22 @@ class TestMLearnipy:
         m = sppp().get_all_users_songs_w_selected_features(pls, ['id', 'energy', 'tempo'])
 
         assert m == c
+
+    # def test_get_target_and_all_other_pls_feature_addition(self):
+    #     def sppp():
+    #         learnipy = MLearnipy(username, auth=token())
+    #         # creates a fake python object for further testing
+    #         learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
+    #         learnipy.audio_features = MagicMock(return_value=mock_audio_features)
+    #         learnipy.fetch_filtered_features = MagicMock(
+    #             return_value={'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2,
+    #                           'tempo': [pl_1_song_tempo] * 2})
+    #
+    #         # sets default username for the instance
+    #         learnipy.default_username = username
+    #         return learnipy
+    #
+    #
+    #
+    #
+    #     assert sppp().get_target_and_all_other_pls(['id', 'enegy'], True) ==

@@ -1,5 +1,4 @@
 import logging
-import pandas
 import spotipy.util as util
 
 from spotipy_client import MLearnipy
