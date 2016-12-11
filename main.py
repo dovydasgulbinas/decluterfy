@@ -1,6 +1,7 @@
 import logging
 import spotipy.util as util
 
+from ml_classifier import TestClassifier
 from spotipy_client import MLearnipy
 
 username = 'coder-hermes'
@@ -23,7 +24,7 @@ def main():
         print(features[1])
 
         # TODO: DO ML analysis with decision tree
-
+        test_classifier_obj = TestClassifier
 
 if __name__ == '__main__':
     logger = logging.getLogger()
