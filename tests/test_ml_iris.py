@@ -4,28 +4,26 @@ from sklearn import tree
 
 """
 Basic ML concept implementation
+
+Test explains how sklearn machine learning works using iris example
 """
+def test_sklearn_decision_tree_classifier():
+    iris = load_iris()
+    # iris.feature_names - available characteristics of iris
+    # iris.target_names - available types of iris
 
-iris = load_iris()
-print(iris.feature_names)
-print(iris.target_names)
+    test_idx = [0, 50, 100]
+    # Remove elements to create 'food' for machine learning
+    training_target = np.delete(iris.target, test_idx)
+    train_data = np.delete(iris.data, test_idx, axis=0)
 
-test_idx = [0, 50, 100]
+    # Use removed elements to create test data
+    test_target = iris.target[test_idx]
+    test_data = iris.data[test_idx]
 
-# Remove elements to create 'food' for machine learning
-training_target = np.delete(iris.target, test_idx)
-train_data = np.delete(iris.data, test_idx, axis=0)
+    clf = tree.DecisionTreeClassifier()
+    clf.fit(train_data, training_target)
 
-# Use removed elements to create test data
-test_target = iris.target[test_idx]
-test_data = iris.data[test_idx]
+    predicted_data = clf.predict(test_data)
 
-clf = tree.DecisionTreeClassifier()
-clf.fit(train_data, training_target)
-
-predicted_data = clf.predict(test_data)
-
-print("   Actual: %s" % test_target)
-print("Predicted: %s" % predicted_data)
-
-assert (test_target == predicted_data).all()
+    assert (test_target == predicted_data).all()
