@@ -298,6 +298,11 @@ class MLearnipy(spotipy.Spotify):
 
         logger.info('Total features received: {} + {} = {}'.format(spf_len, sof_len, total_len))
 
+        # adding playlist ids to the datasctruture
+
+        spf['playlist_id'] = spf_targs
+        sof['playlist_id'] = sof_targs
+
         return spf, sof
 
 
