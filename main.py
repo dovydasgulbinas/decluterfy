@@ -1,9 +1,9 @@
 import logging
 import spotipy.util as util
 
-from ml_classifier import TestClassifier
 from spotipy_client import MLearnipy
 from ml_items import DatasetFormer
+from sklearn import tree
 
 username = 'coder-hermes'
 
@@ -28,6 +28,17 @@ selected_features = [
 def fetch_token(username='coder-hermes'):
     return util.prompt_for_user_token(username)
 
+def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_set):
+    decision_tree_classifier = tree.DecisionTreeClassifier()
+
+    songs_not_in_unsorted_playlist = already_sorted_set.data
+    playlists_for_sorted_songs = already_sorted_set.target
+    decision_tree_classifier.fit(songs_not_in_unsorted_playlist, playlists_for_sorted_songs)
+
+    incorrectly_sorted_songs = incorrectly_sorted_set.data
+    playlists_for_unsorted_songs = decision_tree_classifier.predict(incorrectly_sorted_songs)
+
+    return playlists_for_unsorted_songs
 
 def main():
     token = fetch_token()
@@ -42,20 +53,12 @@ def main():
         # print(all_playlists)
 
         # Form a data-frame for ml analysis
-        all_pls = DatasetFormer(all_playlists, 'playlist_id')
-        unsorted_pls = DatasetFormer(unsorted_playlist, 'playlist_id')
+        already_sorted_set = DatasetFormer(all_playlists, 'playlist_id')
+        incorrectly_sorted_set = DatasetFormer(unsorted_playlist, 'playlist_id')
 
-        # data magic
-        print(all_pls.target)
-        print(all_pls.feature_names)
-        print(all_pls.data)
-        print(all_pls.target_names)
-
-        print(all_pls.targets_original)
-
-        # TODO: DO ML analysis with decision tree
-        test_classifier_obj = TestClassifier
-
+        # playlists_for_unsorted_songs contains ids for playlists to which unsorted songs have to be moved
+        # elements of playlists_for_unsorted_songs are in the same order as songs in incorrectly_sorted_set
+        playlists_for_unsorted_songs = predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_set)
 
 if __name__ == '__main__':
     logger = logging.getLogger()

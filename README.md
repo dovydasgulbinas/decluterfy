@@ -7,7 +7,8 @@ A tool for getting your playlist data from Spotify and running some machine lear
 2. Create your virtual enviroment: `conda create -n my_project_env python=3`
 3. Activate your new virtual env: `activate my_project_env`
 4. Install `Spotipy` package via pip: `pip install spotipy`
-5. Run the file: `main.py`
+5. Install tools for machine learning with conda or pip: `conda install scikit-learn` or `pip install -U scikit-learn`
+6. Run the file: `main.py`
 
 
 # about objects
