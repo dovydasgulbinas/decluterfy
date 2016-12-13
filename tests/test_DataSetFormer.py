@@ -13,6 +13,18 @@ def df():
     # initialize final structure
     return ob
 
+def df_popped():
+    data_frame = {
+        "a": [1, 2, 3, 4],
+        "test_target": ['aa','bb','bb','dd'],
+        "c": [11, 12, 13, 14],
+        "e": [55, 66, 77, 88]
+    }
+
+    ob = DatasetFormer(data_frame, 'test_target', ["a", "e"])
+    # initialize final structure
+    return ob
+
 
 class TestDatasetFormer:
     def test_generate_int_id_index(self):
@@ -61,6 +73,22 @@ class TestDatasetFormer:
 
     def test__structurize_dict_array_original_targets_are_ok(self):
         assert df().targets_original == ['aa','bb','bb','dd']
+
+    def test__pop_internal_keys__are_removed(self):
+        assert df_popped().feature_names == ["c"]
+
+    def test__pop_internal_keys__dict_is_popped_correctly(self):
+        popped = {
+            "a": [1, 2, 3, 4],
+            "e": [55, 66, 77, 88]
+        }
+
+        assert df_popped().popped_entries == popped
+
+
+
+
+
 
 
     

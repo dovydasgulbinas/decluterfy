@@ -25,7 +25,7 @@ Storage -- list storage below
 class DatasetFormer:
     """Takes in a dictionary with lists inside and constructs ML friendly datastructure."""
 
-    def __init__(self, data_frame, target_key):
+    def __init__(self, data_frame, target_key, internal_keys = []):
         """Takes in a datastructure.
 
         Arguments:
@@ -38,6 +38,7 @@ class DatasetFormer:
                     ...
                     }
         - target_field - the label(str)  by which data is classified
+        - iternal_keys - a list of keys that will be excluded from machine learning process
         """
 
         self._data_frame = data_frame
@@ -51,6 +52,10 @@ class DatasetFormer:
         # helper vars
         self.targets_as_ids = None  # a id based list that is extracted from target features from dict
         self.targets_original = None  # a shortcut variable for accessing target features
+
+        self.internal_keys = internal_keys  # defines which keys will be popped from a dataframe
+        self.popped_entries = {}  # A dict that stores all internal keys with their data
+
 
         self.total_entries = len(self._data_frame[self.target_key])
 
@@ -70,6 +75,14 @@ class DatasetFormer:
                 result_vals.append(item_list[id])
 
         return result_ids, result_vals
+
+    def _pop_internal_keys(self):
+        self.internal_dict = {}
+
+        for key in self.internal_keys:
+             self.popped_entries[key] = self._data_frame.pop(key)
+
+
 
     @staticmethod
     def generate_int_ids_of_items(item_list, unique_list):
@@ -96,6 +109,9 @@ class DatasetFormer:
 
     def _structurize_dict_array(self):
 
+        # hides internalized keys from ML
+        self._pop_internal_keys()
+
         # add all keys to feature_names
         names = list(self._data_frame.keys())
         names.sort()
@@ -111,6 +127,7 @@ class DatasetFormer:
         self.data = []
         for i in range(0, self.total_entries):
             self.data.append(self.structure_as_row(self.feature_names, self._data_frame, i))
+
 
 
 def main():
