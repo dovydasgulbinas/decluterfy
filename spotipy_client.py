@@ -122,7 +122,7 @@ class MLearnipy(spotipy.Spotify):
                 # logger.debug("i:{}, spr:{}, rq:{}".format(i, songs_per_request,request))
                 playlist_songs = playlist['items'][i]['track']['id']
                 items.append(playlist_songs)
-        return items
+        return items, [playlist_id]*num_songs # also returns playlist ids
 
     def _fetch_song_features(self, id_list, print_json=False):
         """Takes a list of song ids and returns list of their audio features"""
@@ -163,7 +163,7 @@ class MLearnipy(spotipy.Spotify):
 
         logger.debug(selection)
 
-        id_list = self.fetch_all_song_ids_from_a_playlist(playlist_id)
+        id_list, target_playlist = self.fetch_all_song_ids_from_a_playlist(playlist_id)
         all_features = self._fetch_song_features(id_list)
         logger.debug(all_features)
 
@@ -174,7 +174,7 @@ class MLearnipy(spotipy.Spotify):
                 selection[index].append(songs_features[index])
 
         logger.debug(selection)
-        return selection
+        return selection, target_playlist
 
     def list_playlists_and_chose_one(self, username=None):
         """Lists all all playlists user has and returns id of a chosen pl and a list of all pls"""
@@ -251,15 +251,17 @@ class MLearnipy(spotipy.Spotify):
         """
         result = dict.fromkeys(selected_features, [])
         logger.debug('CALLING: get_all_users_songs_w_selected_features')
+        targets = []
 
         for playlist_id in playlist_ids:
             # returns filtered features of a single playlist
-            playlist_features = self.fetch_filtered_features(playlist_id, selected_features)
+            playlist_features, target_playlists = self.fetch_filtered_features(playlist_id, selected_features)
+            targets.extend(target_playlists)
 
             for feature in selected_features:
                 result[feature] = result[feature] + playlist_features[feature]
 
-        return result
+        return result, targets
 
     def get_target_and_all_other_pls(self, selected_features, attach_pl_ids=False):
         """Gets all user songs by selected features.
@@ -287,8 +289,8 @@ class MLearnipy(spotipy.Spotify):
         selected_pl = pls[0]  # gets one id of a playlist
         other_pls = self.subtract_lists(pls[1], [selected_pl])  # get a list of remaining playlist ids
 
-        spf = self.get_all_users_songs_w_selected_features([selected_pl], selected_features)
-        sof = self.get_all_users_songs_w_selected_features(other_pls, selected_features)
+        spf, spf_targs = self.get_all_users_songs_w_selected_features([selected_pl], selected_features)
+        sof, sof_targs = self.get_all_users_songs_w_selected_features(other_pls, selected_features)
 
         spf_len = len(spf[selected_features[0]])
         sof_len = len(sof[selected_features[0]])

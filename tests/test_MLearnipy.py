@@ -35,6 +35,7 @@ def sp():
     learnipy.default_username = username
     return learnipy
 
+new_return = [{"id": [pl_1_song_id] * 60, "energy": [pl_1_song_energy] * 60}, [playlist_id]*60]
 
 @pytest.fixture(scope='module')
 def spp():
@@ -43,7 +44,7 @@ def spp():
     learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
     learnipy.audio_features = MagicMock(return_value=mock_audio_features)
     learnipy.fetch_filtered_features = MagicMock(
-        return_value={"id": [pl_1_song_id] * 60, "energy": [pl_1_song_energy] * 60})
+        return_value=new_return)
 
     # sets default username for the instance
     learnipy.default_username = username
@@ -67,7 +68,8 @@ class TestMLearnipy:
 
     def test_fetch_all_song_ids_from_a_playlist_with_60_songs(self):
         # the playlist has 60 identical songs therefore we generate a list w/ 60 of them
-        assert sp().fetch_all_song_ids_from_a_playlist(playlist_id) == ([pl_1_song_id] * 60)
+        assert sp().fetch_all_song_ids_from_a_playlist(playlist_id)[0] == ([pl_1_song_id] * 60)
+        assert sp().fetch_all_song_ids_from_a_playlist(playlist_id)[1] == ([playlist_id] * 60)
 
     def test_fetch_song_features_with_60_ids(self):
         assert sp()._fetch_song_features(([pl_1_song_id] * 60), print_json=False) == mock_audio_features
@@ -88,7 +90,7 @@ class TestMLearnipy:
         assert lp._fetch_song_features(([pl_1_song_id] * 3)) == mock_audio_features_any * 3
 
     def test_fetch_filtered_features__all_60_ids_match(self):
-        fff = sp().fetch_filtered_features(playlist_id, ['id'])
+        fff = sp().fetch_filtered_features(playlist_id, ['id'])[0]
         assert fff['id'] == [pl_1_song_id] * 60
 
     def test__slice_to_multiple_lists__limit2_odd_number_items(self):
@@ -108,7 +110,7 @@ class TestMLearnipy:
         fs = ['id']
 
         assert spp(). \
-                   get_all_users_songs_w_selected_features(pls, fs) == {"id": [pl_1_song_id] * 120}
+                   get_all_users_songs_w_selected_features(pls, fs)[0] == {"id": [pl_1_song_id] * 120}
 
     def test_get_all_users_songs_w_selected_features__two_attrs(self):
         def sppp():
@@ -117,7 +119,7 @@ class TestMLearnipy:
             learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
             learnipy.audio_features = MagicMock(return_value=mock_audio_features)
             learnipy.fetch_filtered_features = MagicMock(
-                return_value={'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2})
+                return_value=[{'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2}, [playlist_id]*2])
 
             # sets default username for the instance
             learnipy.default_username = username
@@ -127,7 +129,7 @@ class TestMLearnipy:
         c = {'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2}
         m = sppp().get_all_users_songs_w_selected_features(pls, ['id', 'energy'])
 
-        assert m == c
+        assert m[0] == c
 
     def test_get_all_users_songs_w_selected_features__3_attrs(self):
         def sppp():
@@ -136,8 +138,8 @@ class TestMLearnipy:
             learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
             learnipy.audio_features = MagicMock(return_value=mock_audio_features)
             learnipy.fetch_filtered_features = MagicMock(
-                return_value={'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2,
-                              'tempo': [pl_1_song_tempo] * 2})
+                return_value=[{'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2,
+                              'tempo': [pl_1_song_tempo] * 2}, [playlist_id]*2])
 
             # sets default username for the instance
             learnipy.default_username = username
@@ -147,7 +149,7 @@ class TestMLearnipy:
         c = {'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2, 'tempo': [pl_1_song_tempo] * 2}
         m = sppp().get_all_users_songs_w_selected_features(pls, ['id', 'energy', 'tempo'])
 
-        assert m == c
+        assert m[0] == c
 
     def test_get_all_users_songs_w_selected_features_n_attrs(self):
         def sppp():
@@ -156,34 +158,17 @@ class TestMLearnipy:
             learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
             learnipy.audio_features = MagicMock(return_value=mock_audio_features)
             learnipy.fetch_filtered_features = MagicMock(
-                return_value={'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2,
-                              'tempo': [pl_1_song_tempo] * 2})
+                return_value=[{'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2,
+                              'tempo': [pl_1_song_tempo] * 2}, [playlist_id]*2])
 
             # sets default username for the instance
             learnipy.default_username = username
             return learnipy
 
         pls = [playlist_id, playlist_id]
-        c = {'id': [pl_1_song_id] * 4, 'energy': [pl_1_song_energy] * 4, 'tempo': [pl_1_song_tempo] * 4}
+        c = [{'id': [pl_1_song_id] * 4, 'energy': [pl_1_song_energy] * 4, 'tempo': [pl_1_song_tempo] * 4}, [playlist_id]*4]
         m = sppp().get_all_users_songs_w_selected_features(pls, ['id', 'energy', 'tempo'])
 
-        assert m == c
+        assert m[0] == c[0]
 
-    # def test_get_target_and_all_other_pls_feature_addition(self):
-    #     def sppp():
-    #         learnipy = MLearnipy(username, auth=token())
-    #         # creates a fake python object for further testing
-    #         learnipy.user_playlist_tracks = MagicMock(return_value=playlist)
-    #         learnipy.audio_features = MagicMock(return_value=mock_audio_features)
-    #         learnipy.fetch_filtered_features = MagicMock(
-    #             return_value={'id': [pl_1_song_id] * 2, 'energy': [pl_1_song_energy] * 2,
-    #                           'tempo': [pl_1_song_tempo] * 2})
-    #
-    #         # sets default username for the instance
-    #         learnipy.default_username = username
-    #         return learnipy
-    #
-    #
-    #
-    #
-    #     assert sppp().get_target_and_all_other_pls(['id', 'enegy'], True) ==
+
