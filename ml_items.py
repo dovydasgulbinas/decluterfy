@@ -76,6 +76,30 @@ class DatasetFormer:
 
         return result_ids, result_vals
 
+    def remap_list_of_targets_to_initial_value(self, unresolved_list):
+        """takes in a list of ints and returns their initial value"""
+
+        logger.debug('THIS IS DEBUG')
+        logger.debug('THIS IS DEBUG')
+        logger.debug('THIS IS DEBUG')
+        logger.debug('THIS IS DEBUG')
+        logger.debug('THIS IS DEBUG')
+
+        resolved_list = []
+
+        for internal_id in unresolved_list:
+            # logger.debug(unresolved_list)
+            index = self.target_names.index(internal_id)
+            # item = self.targets_original[index]
+            # logger.debug("{} {}".format(item, index))
+            # resolved_list.extend(item)
+            logger.debug(internal_id)
+
+
+
+        return list(resolved_list)
+
+
     def _pop_internal_keys(self):
         self.internal_dict = {}
 
@@ -131,8 +155,9 @@ class DatasetFormer:
 
 
 def main():
-    # username = str(input("Please enter your Spotify ID: eg. 1199434580"))
     pass
+    # username = str(input("Please enter your Spotify ID: eg. 1199434580"))
+
 
 
 if __name__ == '__main__':

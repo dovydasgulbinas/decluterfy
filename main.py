@@ -39,7 +39,15 @@ def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_
     playlists_for_unsorted_songs = decision_tree_classifier.predict(incorrectly_sorted_songs)
 
     return playlists_for_unsorted_songs
-    
+
+def remap_pls_index_to_ids_and_names(data_struct, ):
+    """Takes a
+
+    :param data_struct: an instance of DatasetFormer class
+    :return:
+    """
+
+
 
 def main():
     token = fetch_token()
@@ -47,11 +55,6 @@ def main():
         sp = MLearnipy(username, auth=token)
 
         unsorted_playlist, all_playlists = sp.get_target_and_all_other_pls(selected_features)
-
-        # print(unsorted_playlist)
-
-        # sp.print_separator(' All other features ')
-        # print(all_playlists)
 
         # Form a data-frame for ml analysis
         already_sorted_set = DatasetFormer(all_playlists, 'playlist_id', ['id'])

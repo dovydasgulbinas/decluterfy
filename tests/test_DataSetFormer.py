@@ -1,5 +1,9 @@
+import logging
 import pytest
 from ml_items import DatasetFormer
+
+logger = logging.getLogger()
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 @pytest.fixture(scope='module')
 def df():
@@ -84,6 +88,16 @@ class TestDatasetFormer:
         }
 
         assert df_popped().popped_entries == popped
+
+    def test__remap_list_of_targets_to_initial_value(self):
+        ttl = ['aa', 'bb', 'bb', 'dd']
+        tti = [1,2,2,3]
+        result = df().remap_list_of_targets_to_initial_value(tti)
+
+        assert result == ttl
+
+
+
 
 
 
