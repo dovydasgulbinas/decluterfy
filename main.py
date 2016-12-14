@@ -59,8 +59,12 @@ def main():
         logger.debug("predicted list: {}".format(playlists_for_unsorted_songs))
         logger.debug("names: {}".format(already_sorted_set.target_names))
         logger.debug("ids : {}".format(already_sorted_set.targets_as_ids))
+
         remapped_songs = already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
         logger.info("Songs remapped: {}".format(remapped_songs))
+
+        already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
+
 
 
 
