@@ -40,14 +40,6 @@ def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_
 
     return playlists_for_unsorted_songs
 
-def remap_pls_index_to_ids_and_names(data_struct, ):
-    """Takes a
-
-    :param data_struct: an instance of DatasetFormer class
-    :return:
-    """
-
-
 
 def main():
     token = fetch_token()
@@ -63,7 +55,13 @@ def main():
         # playlists_for_unsorted_songs contains ids for playlists to which unsorted songs have to be moved
         # elements of playlists_for_unsorted_songs are in the same order as songs in incorrectly_sorted_set
         playlists_for_unsorted_songs = predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_set)
+
+        logger.info("predicted list: {}".format(playlists_for_unsorted_songs))
+        logger.info("names: {}".format(already_sorted_set.target_names))
+        logger.info("ids : {}".format(already_sorted_set.targets_as_ids))
+
         already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
+
 
 
 
