@@ -63,6 +63,7 @@ def main():
         # playlists_for_unsorted_songs contains ids for playlists to which unsorted songs have to be moved
         # elements of playlists_for_unsorted_songs are in the same order as songs in incorrectly_sorted_set
         playlists_for_unsorted_songs = predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_set)
+        already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
 
 
 

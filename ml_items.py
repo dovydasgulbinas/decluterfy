@@ -86,18 +86,15 @@ class DatasetFormer:
         for internal_id in unresolved_list:
             # logger.debug(unresolved_list)
             index = self.targets_as_ids.index(internal_id)
-            item = self.targets_original[index]
-            logger.debug("{} {}".format(item, index))
+            item = self.target_names[index]
+            logger.debug(" P--{} I--{} D--{}".format(internal_id, index, item))
             resolved_list.append(item)
-            logger.debug(internal_id)
 
+        logger.debug(unresolved_list)
+        logger.debug(self.targets_as_ids)
+        logger.debug(self.targets_original)
+        logger.debug("Resolved{}".format(resolved_list))
 
-        logger.debug(resolved_list)
-        logger.debug(resolved_list)
-        logger.debug(resolved_list)
-        logger.debug(resolved_list)
-        logger.debug(resolved_list)
-        logger.debug(resolved_list)
         return list(resolved_list)
 
 
