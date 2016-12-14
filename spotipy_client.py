@@ -19,6 +19,7 @@ class MLearnipy(spotipy.Spotify):
         self.limit = limit
         self._last_playlist = None
         self._last_playlist_id = None
+        self.last_fetch_of_all_pls = None
 
     def print_separator(self, message='', width=80, separator='='):
         print('')
@@ -176,6 +177,7 @@ class MLearnipy(spotipy.Spotify):
         logger.debug(selection)
         return selection, target_playlist
 
+    #todo: give user  a option to exclude pls
     def list_playlists_and_chose_one(self, username=None):
         """Lists all all playlists user has and returns id of a chosen pl and a list of all pls"""
         if not username:
@@ -184,11 +186,13 @@ class MLearnipy(spotipy.Spotify):
         playlists = self.user_playlists(username)
         pl_ids = []
         pl_excluded = []
+        pl_info = []
 
         playlists = list(enumerate(playlists['items'], start=0))
         for index, playlist in playlists:
 
             if playlist['owner']['id'] == username:
+                pl_info.append((playlist['id'], playlist['name']))
                 print(" #{} \t{} \t{}".format(index, playlist['id'], playlist['name']))
                 # generates a list of playlists that only belong to a user
                 pl_ids.append(playlist['id'])
@@ -218,7 +222,8 @@ class MLearnipy(spotipy.Spotify):
         logger.debug((playlists[selected][1]['id'], pl_ids))
         # a tuple
         logger.info('Number of fetched playlists: {}'.format(len(pl_ids)))
-        return (playlists[selected][1]['id']), pl_ids
+        self.last_fetch_of_all_pls = pl_info
+        return (playlists[selected][1]['id']), pl_ids, pl_info
 
     def list_playlist_songs(self, playlist_id):
         """list all songs of a users playlist it uses default id as users id."""
@@ -233,6 +238,21 @@ class MLearnipy(spotipy.Spotify):
         """Utility method that makes a sublist of two lists RETURNS: list"""
         z = list(set(x) - set(y))
         return z
+
+    @staticmethod
+    def find_in_list_of_tuples(tup_list, search_value, search_index, return_index):
+        """takes a list with tuple inside and uses some value of that tuple"""
+
+        try:
+            for tup in tup_list:
+                if tup[search_index] == search_value:
+                    return tup[return_index]
+        except Exception as e:
+            logger.error('Could not find a match E:{}'.format(e))
+
+        return None
+
+
 
     def get_all_users_songs_w_selected_features(self, playlist_ids, selected_features):
         """Gets selected features from all the songs user has. Returns dict

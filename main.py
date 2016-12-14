@@ -41,6 +41,8 @@ def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_
     return playlists_for_unsorted_songs
 
 
+
+
 def main():
     token = fetch_token()
     if token:
@@ -60,10 +62,21 @@ def main():
         logger.debug("names: {}".format(already_sorted_set.target_names))
         logger.debug("ids : {}".format(already_sorted_set.targets_as_ids))
 
-        remapped_songs = already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
-        logger.info("Songs remapped: {}".format(remapped_songs))
+        remaped_playlist = already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
+        logger.debug("Songs remapped: {}".format(remaped_playlist))
 
-        already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
+        # returns destination playlist from their respective ids
+        pl_names = sp.last_fetch_of_all_pls
+
+        sp.print_separator(' Decluter suggestions ')
+
+        # gets all song ids
+        song_ids_list = incorrectly_sorted_set.popped_entries['id']
+
+        for index,playlist in list(enumerate(remaped_playlist, start=0)):
+            # todo add song names here:
+            print('#{}\t{}\t->\t{}'.format(index, song_ids_list[index], sp.find_in_list_of_tuples(pl_names, playlist, 0, 1)))
+
 
 
 

@@ -171,4 +171,10 @@ class TestMLearnipy:
 
         assert m[0] == c[0]
 
+    def test_find_in_list_of_tuples(self):
 
+       assert MLearnipy.find_in_list_of_tuples([('axa','alfa'),('bxb', 'beta')], 'bxb', 0,1) == 'beta'
+
+    def test_find_in_list_of_tuples_no_value(self):
+
+       assert MLearnipy.find_in_list_of_tuples([('axa','alfa'),('bxb', 'beta')], '', 0,1) == None
