@@ -80,23 +80,24 @@ class DatasetFormer:
         """takes in a list of ints and returns their initial value"""
 
         logger.debug('THIS IS DEBUG')
-        logger.debug('THIS IS DEBUG')
-        logger.debug('THIS IS DEBUG')
-        logger.debug('THIS IS DEBUG')
-        logger.debug('THIS IS DEBUG')
-
+        logger.debug(self.targets_as_ids)
         resolved_list = []
 
         for internal_id in unresolved_list:
             # logger.debug(unresolved_list)
-            index = self.target_names.index(internal_id)
-            # item = self.targets_original[index]
-            # logger.debug("{} {}".format(item, index))
-            # resolved_list.extend(item)
+            index = self.targets_as_ids.index(internal_id)
+            item = self.targets_original[index]
+            logger.debug("{} {}".format(item, index))
+            resolved_list.append(item)
             logger.debug(internal_id)
 
 
-
+        logger.debug(resolved_list)
+        logger.debug(resolved_list)
+        logger.debug(resolved_list)
+        logger.debug(resolved_list)
+        logger.debug(resolved_list)
+        logger.debug(resolved_list)
         return list(resolved_list)
 
 
@@ -144,6 +145,7 @@ class DatasetFormer:
         # get all unique targets and add them to target_names
         self.targets_original = self._data_frame[self.target_key]
         target_ids, unique_targets = self.generate_int_id_index(self.targets_original)
+        self.targets_as_ids = target_ids
         self.target_names = unique_targets
         # remap target value names to ids
         self.target = self.generate_int_ids_of_items(self.targets_original, self.target_names)
