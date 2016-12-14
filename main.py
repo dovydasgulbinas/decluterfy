@@ -56,12 +56,11 @@ def main():
         # elements of playlists_for_unsorted_songs are in the same order as songs in incorrectly_sorted_set
         playlists_for_unsorted_songs = predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_set)
 
-        logger.info("predicted list: {}".format(playlists_for_unsorted_songs))
-        logger.info("names: {}".format(already_sorted_set.target_names))
-        logger.info("ids : {}".format(already_sorted_set.targets_as_ids))
-
-        already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
-
+        logger.debug("predicted list: {}".format(playlists_for_unsorted_songs))
+        logger.debug("names: {}".format(already_sorted_set.target_names))
+        logger.debug("ids : {}".format(already_sorted_set.targets_as_ids))
+        remapped_songs = already_sorted_set.remap_list_of_targets_to_initial_value(playlists_for_unsorted_songs)
+        logger.info("Songs remapped: {}".format(remapped_songs))
 
 
 

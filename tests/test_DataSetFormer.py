@@ -91,7 +91,7 @@ class TestDatasetFormer:
 
     def test__remap_list_of_targets_to_initial_value(self):
         ttl = ['aa', 'bb', 'bb', 'dd']
-        tti = [0,1,1,3]
+        tti = [0,1,1,2]
         result = df().remap_list_of_targets_to_initial_value(tti)
 
         assert result == ttl

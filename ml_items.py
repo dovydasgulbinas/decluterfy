@@ -67,13 +67,14 @@ class DatasetFormer:
         """Takes in a list of data evaluates its uniquines and repopulates it with indexes."""
         result_ids = []
         result_vals = []
+        counter = 0
 
         for item in item_list:
             id = item_list.index(item)
             if id not in result_ids:
-                result_ids.append(id)
+                result_ids.append(counter)
                 result_vals.append(item_list[id])
-
+                counter+=1
         return result_ids, result_vals
 
     def remap_list_of_targets_to_initial_value(self, unresolved_list):
