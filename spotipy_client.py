@@ -255,7 +255,7 @@ class MLearnipy(spotipy.Spotify):
                 track = tracks[i]
                 # print(json.dumps(track, indent=2))
                 song_name = track['name']
-                #fixme: resolve all artist names
+                #fixme: resolve all artist namesn
                 song_artist = track['artists'][0]['name']
                 preview_url = track['preview_url']
                 items.append((song_artist, song_name, preview_url))
