@@ -97,7 +97,7 @@ def main():
             track = tracks[index]
             pl_name = sp.find_in_list_of_tuples(pl_names, playlist, 0, 1)
 
-            print('Move:\t{}\n#{}\t{} -> {}'.format((raw_track_list[index][2]),index, track, pl_name))
+            print('Move:\t{}\n#{}\t{} -> {}\n'.format((raw_track_list[index][2]),index, track, pl_name))
 
             # asks if user want to move a song to a predicted playlist
             if user_confirms():
@@ -110,7 +110,7 @@ def main():
                 if user_confirms():
                     print('Deleting...')
                     # todo: delete songs here
-                    # sp.user_playlist_remove_specific_occurrences_of_tracks(username, playlist, [song_ids_list[index]])
+                    sp.user_playlist_remove_all_occurrences_of_tracks(username, unsorted_playlist['playlist_id'][0], [song_ids_list[index]])
 
 
                 else:
