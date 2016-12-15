@@ -1,5 +1,5 @@
 # decluterfy
-Tidy your old starred playlist and move songs to similar playlists you already own
+Tidy your old enourmous playlist and move songs to similar playlists you already own
 
 ## Starting the project
 
