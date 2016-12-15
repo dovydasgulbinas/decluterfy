@@ -25,7 +25,7 @@ selected_features = [
 
 
 def fetch_token(username='coder-hermes'):
-    return util.prompt_for_user_token(username)
+    return util.prompt_for_user_token(username, scope = 'playlist-modify-public')
 
 def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_set):
     decision_tree_classifier = tree.DecisionTreeClassifier()
@@ -41,6 +41,15 @@ def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_
 
 def make_track_names(item):
     return '{} - {}'.format(item[0], item[1])
+
+def user_confirms(message='\nY/n', negation_list=('n', 'N')):
+    prompt = input(message)
+    if prompt not in negation_list:
+        return True
+    else:
+        return False
+
+
 
 
 def main():
@@ -72,12 +81,45 @@ def main():
 
         # gets all song ids
         song_ids_list = incorrectly_sorted_set.popped_entries['id']
+        raw_track_list = sp.resolve_song_names_from_id_list(song_ids_list)
 
-        tracks = list(map(make_track_names,sp.resolve_song_names_from_id_list(song_ids_list)))
+        tracks = list(
+            map(make_track_names, raw_track_list))
 
         for index,playlist in list(enumerate(remaped_playlist, start=0)):
             # todo add song names here:
             print('#{}\t{}\t->\t{}'.format(index, tracks[index], sp.find_in_list_of_tuples(pl_names, playlist, 0, 1)))
+
+        sp.print_separator(' Chose songs you want to move ')
+
+        for index, playlist in list(enumerate(remaped_playlist, start=0)):
+
+            track = tracks[index]
+            pl_name = sp.find_in_list_of_tuples(pl_names, playlist, 0, 1)
+
+            print('Move:\t{}\n#{}\t{} -> {}\n'.format((raw_track_list[index][2]),index, track, pl_name))
+
+            # asks if user want to move a song to a predicted playlist
+            if user_confirms():
+                print('Moving...')
+
+                # todo: add moving here
+                sp.user_playlist_add_tracks(username, playlist, [song_ids_list[index]])
+
+                print('Do you wish to delete the song you just moved?')
+                if user_confirms():
+                    print('Deleting...')
+                    # todo: delete songs here
+                    sp.user_playlist_remove_all_occurrences_of_tracks(username, unsorted_playlist['playlist_id'][0], [song_ids_list[index]])
+
+
+                else:
+                    pass
+
+            else:
+                pass
+            sp.print_separator('')
+        sp.print_separator(' Decluterfy finished ')
 
 
 
