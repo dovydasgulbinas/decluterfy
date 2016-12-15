@@ -20,6 +20,7 @@ class MLearnipy(spotipy.Spotify):
         self._last_playlist = None
         self._last_playlist_id = None
         self.last_fetch_of_all_pls = None
+        self._last_selected_target_pl = None # gets set when user chooses a playlist
 
     def print_separator(self, message='', width=80, separator='='):
         print('')
@@ -123,7 +124,7 @@ class MLearnipy(spotipy.Spotify):
                 # logger.debug("i:{}, spr:{}, rq:{}".format(i, songs_per_request,request))
                 playlist_songs = playlist['items'][i]['track']['id']
                 items.append(playlist_songs)
-        return items, [playlist_id]*num_songs # also returns playlist ids
+        return items, [playlist_id] * num_songs  # also returns playlist ids
 
     def _fetch_song_features(self, id_list, print_json=False):
         """Takes a list of song ids and returns list of their audio features"""
@@ -177,7 +178,7 @@ class MLearnipy(spotipy.Spotify):
         logger.debug(selection)
         return selection, target_playlist
 
-    #todo: give user  a option to exclude pls
+    # todo: give user  a option to exclude pls
     def list_playlists_and_chose_one(self, username=None):
         """Lists all all playlists user has and returns id of a chosen pl and a list of all pls"""
         if not username:
@@ -223,6 +224,7 @@ class MLearnipy(spotipy.Spotify):
         # a tuple
         logger.info('Number of fetched playlists: {}'.format(len(pl_ids)))
         self.last_fetch_of_all_pls = pl_info
+        self._last_selected_target_pl = playlists[selected][1]['id']
         return (playlists[selected][1]['id']), pl_ids, pl_info
 
     def list_playlist_songs(self, playlist_id):
@@ -232,6 +234,30 @@ class MLearnipy(spotipy.Spotify):
         for i, item in enumerate(tracks):
             track = item['track']
             print("{}. {} -- {} \t {}".format(i, track['artists'][0]['name'], track['name'], track['id']))
+            
+
+    def resolve_song_names_from_id_list(self, song_id_list=None):
+        """Takes in a series of song ids and resolves their name"""
+        username = self._default_username
+
+        items = []
+        num_songs = len(song_id_list)
+        offsets = self._generate_offsets(num_songs)
+        num_requests = self._count_number_of_requests(num_songs)
+
+        for request in range(0, num_requests):
+            playlist = self.user_playlist_tracks(username, song_id_list, offset=offsets[request], limit=self.limit)
+
+            if request < num_requests - 1:
+                songs_per_request = self.limit
+            else: # makes sure we don't go out of playlist list index
+                songs_per_request = num_songs - offsets[request]
+
+            for i in range(0, songs_per_request):
+                playlist_songs = playlist['items'][i]['track']['id']
+                items.append(playlist_songs)
+        return items
+
 
     @staticmethod
     def subtract_lists(x, y):
@@ -251,8 +277,6 @@ class MLearnipy(spotipy.Spotify):
             logger.error('Could not find a match E:{}'.format(e))
 
         return None
-
-
 
     def get_all_users_songs_w_selected_features(self, playlist_ids, selected_features):
         """Gets selected features from all the songs user has. Returns dict

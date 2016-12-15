@@ -1,4 +1,4 @@
-import logging
+
 import spotipy.util as util
 
 from spotipy_client import MLearnipy
@@ -41,8 +41,6 @@ def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_
     return playlists_for_unsorted_songs
 
 
-
-
 def main():
     token = fetch_token()
     if token:
@@ -78,8 +76,7 @@ def main():
             print('#{}\t{}\t->\t{}'.format(index, song_ids_list[index], sp.find_in_list_of_tuples(pl_names, playlist, 0, 1)))
 
 
-
-
+        
 
 if __name__ == '__main__':
     logger = logging.getLogger()
