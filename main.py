@@ -1,6 +1,5 @@
-
+import logging
 import spotipy.util as util
-
 from spotipy_client import MLearnipy
 from ml_items import DatasetFormer
 from sklearn import tree
@@ -40,6 +39,9 @@ def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_
 
     return playlists_for_unsorted_songs
 
+def make_track_names(item):
+    return '{} - {}'.format(item[0], item[1])
+
 
 def main():
     token = fetch_token()
@@ -71,12 +73,13 @@ def main():
         # gets all song ids
         song_ids_list = incorrectly_sorted_set.popped_entries['id']
 
+        tracks = list(map(make_track_names,sp.resolve_song_names_from_id_list(song_ids_list)))
+
         for index,playlist in list(enumerate(remaped_playlist, start=0)):
             # todo add song names here:
-            print('#{}\t{}\t->\t{}'.format(index, song_ids_list[index], sp.find_in_list_of_tuples(pl_names, playlist, 0, 1)))
+            print('#{}\t{}\t->\t{}'.format(index, tracks[index], sp.find_in_list_of_tuples(pl_names, playlist, 0, 1)))
 
 
-        
 
 if __name__ == '__main__':
     logger = logging.getLogger()

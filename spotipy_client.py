@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import json
 import time
@@ -43,9 +44,16 @@ class MLearnipy(spotipy.Spotify):
     def last_playlist(self, data):
         self._last_playlist = data
 
-    def _count_number_of_requests(self, total_tracks):
-        requests_needed = total_tracks // self.limit
-        if total_tracks % self.limit != 0:
+    def _count_number_of_requests(self, total_tracks, other_limit=None):
+
+        if other_limit:
+            limit = other_limit
+        else:
+            limit = self.limit
+
+        requests_needed = total_tracks // limit
+
+        if total_tracks % limit != 0:
             # the remainder is not zero meaning that we will need one more request
             requests_needed += 1
             logger.debug("Requests needed: {}".format(requests_needed))
@@ -93,7 +101,6 @@ class MLearnipy(spotipy.Spotify):
         for i in range(1, n_lists + 1):
             start = (i - 1) * limit
             end = (i) * limit
-            # logger.debug('List iterrator: {} | {}'.format(start, end))
             sub_list = list[start:end]
             result.append(sub_list)
         logger.debug(result)
@@ -234,30 +241,29 @@ class MLearnipy(spotipy.Spotify):
         for i, item in enumerate(tracks):
             track = item['track']
             print("{}. {} -- {} \t {}".format(i, track['artists'][0]['name'], track['name'], track['id']))
-            
 
-    def resolve_song_names_from_id_list(self, song_id_list=None):
-        """Takes in a series of song ids and resolves their name"""
-        username = self._default_username
-
+    def resolve_song_names_from_id_list(self, song_id_list=None, track_limit=50):
+        """Takes in a series of song ids and resolves their name reuturns list of tuples"""
         items = []
-        num_songs = len(song_id_list)
-        offsets = self._generate_offsets(num_songs)
-        num_requests = self._count_number_of_requests(num_songs)
+        superlist = self._slice_to_multiple_lists(song_id_list,track_limit)
 
-        for request in range(0, num_requests):
-            playlist = self.user_playlist_tracks(username, song_id_list, offset=offsets[request], limit=self.limit)
+        for sublist in superlist:
+            tracks = self.tracks(sublist)
+            tracks = tracks['tracks']
 
-            if request < num_requests - 1:
-                songs_per_request = self.limit
-            else: # makes sure we don't go out of playlist list index
-                songs_per_request = num_songs - offsets[request]
-
-            for i in range(0, songs_per_request):
-                playlist_songs = playlist['items'][i]['track']['id']
-                items.append(playlist_songs)
+            for i in range(0, len(sublist)):
+                track = tracks[i]
+                # print(json.dumps(track, indent=2))
+                song_name = track['name']
+                #fixme: resolve all artist names
+                song_artist = track['artists'][0]['name']
+                preview_url = track['preview_url']
+                items.append((song_artist, song_name, preview_url))
         return items
 
+    # @staticmethod
+    # def bundle_in_groups():
+    #     """Takes in """
 
     @staticmethod
     def subtract_lists(x, y):
