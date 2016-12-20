@@ -43,11 +43,14 @@ def make_track_names(item):
     return '{} - {}'.format(item[0], item[1])
 
 def user_confirms(message='\nY/n', negation_list=('n', 'N')):
-    prompt = input(message)
-    if prompt not in negation_list:
         return True
-    else:
-        return False
+        """
+        prompt = input(message)
+        if prompt not in negation_list:
+            return True
+        else:
+            return False
+        """
 
 
 
@@ -65,6 +68,9 @@ def main():
 
         # playlists_for_unsorted_songs contains ids for playlists to which unsorted songs have to be moved
         # elements of playlists_for_unsorted_songs are in the same order as songs in incorrectly_sorted_set
+        if len(incorrectly_sorted_set.data) == 0:
+            print("I like the way you die boy")
+            return
         playlists_for_unsorted_songs = predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_set)
 
         logger.debug("predicted list: {}".format(playlists_for_unsorted_songs))
@@ -97,7 +103,7 @@ def main():
             track = tracks[index]
             pl_name = sp.find_in_list_of_tuples(pl_names, playlist, 0, 1)
 
-            print('Move:\t{}\n#{}\t{} -> {}\n'.format((raw_track_list[index][2]),index, track, pl_name))
+            #print('Move:\t{}\n#{}\t{} -> {}\n'.format((raw_track_list[index][2]),index, track, pl_name))
 
             # asks if user want to move a song to a predicted playlist
             if user_confirms():
