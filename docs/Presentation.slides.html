@@ -11886,8 +11886,15 @@ a.anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="demo_time-&#128680;">demo_time &#128680;<a class="anchor-link" href="#demo_time-&#128680;">&#182;</a></h1><p><img src="http://www.sqlhammer.com/wp-content/uploads/2016/10/demo-god-meme.jpg" alt="demo-meme"></p>
+<h1 id="demo_time-&#128680;">demo_time &#128680;<a class="anchor-link" href="#demo_time-&#128680;">&#182;</a></h1><hr>
 
+<div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">SPOTIPY_CLIENT_ID</span><span class="o">=</span><span class="s2">&quot;dc484d124a6d49d08309f06ecc0162dc&quot;</span>
+<span class="nb">export</span> <span class="nv">SPOTIPY_CLIENT_SECRET</span><span class="o">=</span><span class="s2">&quot;6d97a73b081644889ada30c66128b8df&quot;</span>
+<span class="nb">export</span> <span class="nv">SPOTIPY_REDIRECT_URI</span><span class="o">=</span><span class="s2">&quot;https://megamorphf.github.io/&quot;</span>
+<span class="nb">source</span> activate decluterfy
+python main.py
+</pre></div>
+<center><img src="http://www.sqlhammer.com/wp-content/uploads/2016/10/demo-god-meme.jpg"></center>
 </div>
 </div>
 </div></section></section><section><section>
@@ -11990,6 +11997,7 @@ a.anchor-link {
 <span class="o">...</span>
 
 <span class="c1"># the 3 lines of magic</span>
+
 <span class="n">decision_tree_classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">songs_not_in_unsorted_playlist</span><span class="p">,</span> <span class="n">playlists_for_sorted_songs</span><span class="p">)</span>
 <span class="n">incorrectly_sorted_songs</span> <span class="o">=</span> <span class="n">incorrectly_sorted_set</span><span class="o">.</span><span class="n">data</span>
 <span class="n">playlists_for_unsorted_songs</span> <span class="o">=</span> <span class="n">decision_tree_classifier</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">incorrectly_sorted_songs</span><span class="p">)</span>
