@@ -261,10 +261,6 @@ class MLearnipy(spotipy.Spotify):
                 items.append((song_artist, song_name, preview_url))
         return items
 
-    # @staticmethod
-    # def bundle_in_groups():
-    #     """Takes in """
-
     @staticmethod
     def subtract_lists(x, y):
         """Utility method that makes a sublist of two lists RETURNS: list"""

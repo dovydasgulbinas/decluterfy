@@ -50,7 +50,6 @@ def spp():
     learnipy.default_username = username
     return learnipy
 
-
 class TestMLearnipy:
     def test__generate_offsets(self):
         assert sp()._generate_offsets(55) == [0]

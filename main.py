@@ -4,7 +4,7 @@ from spotipy_client import MLearnipy
 from ml_items import DatasetFormer
 from sklearn import tree
 
-username = 'coder-hermes'
+username = 'coder-hermes'  # KILL ME FOR HARDCODE OR USE YOUR UNAME INSTEAD
 
 selected_features = [
     "id",
@@ -32,8 +32,9 @@ def predict_playlists_for_unsorted_songs(already_sorted_set, incorrectly_sorted_
 
     songs_not_in_unsorted_playlist = already_sorted_set.data
     playlists_for_sorted_songs = already_sorted_set.target
-    decision_tree_classifier.fit(songs_not_in_unsorted_playlist, playlists_for_sorted_songs)
 
+    # the 3 lines of magic
+    decision_tree_classifier.fit(songs_not_in_unsorted_playlist, playlists_for_sorted_songs)
     incorrectly_sorted_songs = incorrectly_sorted_set.data
     playlists_for_unsorted_songs = decision_tree_classifier.predict(incorrectly_sorted_songs)
 
@@ -48,9 +49,6 @@ def user_confirms(message='\nY/n', negation_list=('n', 'N')):
         return True
     else:
         return False
-
-
-
 
 def main():
     token = fetch_token()

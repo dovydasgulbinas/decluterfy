@@ -1,4 +1,4 @@
-name: my_project_env
+name: decluterfy
 channels: !!python/tuple
 - defaults
 dependencies:
@@ -22,5 +22,3 @@ dependencies:
   - pytest==3.0.5
   - requests==2.12.1
   - spotipy==2.3.8
-prefix: /home/hermes/anaconda3/envs/my_project_env
-
